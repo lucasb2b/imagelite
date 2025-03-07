@@ -1,6 +1,7 @@
 'use client'
 
 import { Template, ImageCard } from "@/components"
+import { Image } from "@/resources/image/image.resource"
 import { useImageService } from "@/resources/image/image.service"
 import { useState } from "react"
 
@@ -15,11 +16,27 @@ export default function GaleriaPage(){
     console.table(result);
   }
 
+  function renderImageCard(image: Image){
+    return(
+      <ImageCard nome={image.name} 
+                  src={image.url} 
+                  tamanho={image.size} 
+                  dataUpload={image.uploadDate} 
+      />
+    )
+  }
+
+  function renderImageCards(){
+    return images.map(renderImageCard)
+  }
+
   return(
     <Template>
       <button className='bg-gray-500' onClick={searchImages}>Clique para mudar</button>
       <section className="grid grid-cols-4 gap-8">
-        <ImageCard nome="{nomeImage}" tamanho='10MB' dataUpload='01/01/2025' src=""/>
+        {
+          renderImageCards()
+        }
       </section>
     </Template>
   )
