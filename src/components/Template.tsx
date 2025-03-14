@@ -7,7 +7,7 @@ interface TemplateProps {
 
 export const Template: React.FC<TemplateProps> = ({
   children,
-  loading,
+  loading = false,
 }: TemplateProps) => {
   return (
     <>
