@@ -1,4 +1,5 @@
-import { InputText, Template } from "@/components";
+import { InputText, Template, Button } from "@/components";
+import Link from 'next/link'
 
 export default function FormularioPage() {
   return (
@@ -51,6 +52,12 @@ export default function FormularioPage() {
                 </div>
               </div>
             </div>
+          </div>
+          <div className="mt-5 flex items-center justify-end gap-x-4">
+            <Button style="bg-blue-500 hover:bg-blue-300" type="submit" label="Save"/>
+            <Link href="/galeria">
+              <Button style="bg-red-500 hover:bg-red-300" type="button" label="Cancel" />
+            </Link>
           </div>
         </form>
       </section>
