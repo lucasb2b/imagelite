@@ -1,8 +1,9 @@
-'use client'
+"use client";
 
-import { InputText, Template, Button } from "@/components";
+import { InputText, Template, Button, RenderIf } from "@/components";
 import Link from "next/link";
 import { useFormik } from "formik";
+import { useState } from "react";
 
 interface FormProps {
   name: string;
@@ -10,16 +11,26 @@ interface FormProps {
   file: any;
 }
 
-const formScheme: FormProps = { name: '', tags: '', file: ''}
+const formScheme: FormProps = { name: "", tags: "", file: "" };
 
 export default function FormularioPage() {
+  const [imagePreview, setImagePreview] = useState<string>();
 
   const formik = useFormik<FormProps>({
     initialValues: formScheme,
     onSubmit: (dados: FormProps) => {
-      console.log(dados)
+      console.log(dados);
+    },
+  });
+
+  function onFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      formik.setFieldValue("file", file);
+      const imageURL = URL.createObjectURL(file);
+      setImagePreview(imageURL)
     }
-  })
+  }
 
   return (
     <Template>
@@ -32,14 +43,22 @@ export default function FormularioPage() {
             <label className="block text-sm font-medium leading-6 text-gray-700">
               Name: *
             </label>
-            <InputText id="name" onChange={formik.handleChange} placeholder="type the image's name" />
+            <InputText
+              id="name"
+              onChange={formik.handleChange}
+              placeholder="type the image's name"
+            />
           </div>
 
           <div className="mt-5 grid grid-cols-1">
             <label className="block text-sm font-medium leading-6 text-gray-700">
               Tags: *
             </label>
-            <InputText id="tags" onChange={formik.handleChange} placeholder="type the tags comma separated" />
+            <InputText
+              id="tags"
+              onChange={formik.handleChange}
+              placeholder="type the tags comma separated"
+            />
           </div>
 
           <div className="mt-5 grid grid-cols-1">
@@ -48,25 +67,36 @@ export default function FormularioPage() {
             </label>
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="mx-auto h-12 w-12 text-gray-300"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                  />
-                </svg>
+                <RenderIf condition={!imagePreview}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="mx-auto h-12 w-12 text-gray-300"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                    />
+                  </svg>
+                </RenderIf>
 
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
                   <label className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600">
-                    <span>Click to upload</span>
-                    <input type="file" className="sr-only" />
+                    <RenderIf condition={!imagePreview}>
+                      <span>Click to upload</span>
+                    </RenderIf>
+                    <RenderIf condition={!!imagePreview}>
+                      <img
+                        src={imagePreview}
+                        width={250}
+                        className="rounded-md"
+                      />
+                    </RenderIf>
+                    <input onChange={onFileUpload} type="file" className="sr-only" />
                   </label>
                 </div>
               </div>
