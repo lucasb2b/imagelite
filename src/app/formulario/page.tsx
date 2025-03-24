@@ -1,7 +1,13 @@
 "use client";
 
-import { InputText, Template, Button, RenderIf } from "@/components";
-import { useImageService } from "@/resources/image/image.service"
+import {
+  InputText,
+  Template,
+  Button,
+  RenderIf,
+  useNotification,
+} from "@/components";
+import { useImageService } from "@/resources/image/image.service";
 import Link from "next/link";
 import { useFormik } from "formik";
 import { useState } from "react";
@@ -15,17 +21,17 @@ interface FormProps {
 const formScheme: FormProps = { name: "", tags: "", file: "" };
 
 export default function FormularioPage() {
-
   const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>();
   const service = useImageService();
+  const notification = useNotification();
 
   const formik = useFormik<FormProps>({
     initialValues: formScheme,
     onSubmit: handleSubmit,
   });
 
-  async function handleSubmit(dados: FormProps){
+  async function handleSubmit(dados: FormProps) {
     setLoading(true);
 
     const formData = new FormData();
@@ -34,11 +40,13 @@ export default function FormularioPage() {
     formData.append("tags", dados.tags);
 
     await service.salvar(formData);
-    
+
     formik.resetForm();
-    setImagePreview('');
+    setImagePreview("");
 
     setLoading(false);
+
+    notification.notify("Upload sent successfully", "success");
   }
 
   function onFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -46,7 +54,7 @@ export default function FormularioPage() {
       const file = event.target.files[0];
       formik.setFieldValue("file", file);
       const imageURL = URL.createObjectURL(file);
-      setImagePreview(imageURL)
+      setImagePreview(imageURL);
     }
   }
 
@@ -116,7 +124,11 @@ export default function FormularioPage() {
                         className="rounded-md"
                       />
                     </RenderIf>
-                    <input onChange={onFileUpload} type="file" className="sr-only" />
+                    <input
+                      onChange={onFileUpload}
+                      type="file"
+                      className="sr-only"
+                    />
                   </label>
                 </div>
               </div>
