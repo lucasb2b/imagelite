@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import { useAuth } from "@/resources";
 import Link from "next/link";
 
@@ -82,9 +83,17 @@ const Loading: React.FC = () => {
 };
 
 const Header: React.FC = () => {
+  const [user, setUser] = React.useState<any>(null);
   const auth = useAuth();
-  const user = auth.getUserSession();
+  //const user = auth.getUserSession();
   const router = useRouter();
+
+  useEffect(() => {
+    const user = auth.getUserSession();
+    if (user) setUser(user);
+  }, []);
+
+  if(user === null) return null;
 
   function logout() {
     auth.invalidateSession();
