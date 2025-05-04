@@ -1,6 +1,9 @@
 import React from "react";
+import { useAuth } from "@/resources";
+import Link from "next/link";
 
 import { ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface TemplateProps {
   children: React.ReactNode;
@@ -14,7 +17,11 @@ export const Template: React.FC<TemplateProps> = ({
   return (
     <>
       <Header />
-      <div className={`${loading ? 'animate-pulse' : ''} container mx-auto mt-8 px-4`}>
+      <div
+        className={`${
+          loading ? "animate-pulse" : ""
+        } container mx-auto mt-8 px-4`}
+      >
         <RenderIf condition={loading}>
           <div className="text-center">
             <Loading />
@@ -23,7 +30,14 @@ export const Template: React.FC<TemplateProps> = ({
         {children}
       </div>
       <Footer />
-      <ToastContainer position="top-right" autoClose={8000} hideProgressBar={false} draggable={false} closeOnClick={true} pauseOnHover={true}/>
+      <ToastContainer
+        position="top-right"
+        autoClose={8000}
+        hideProgressBar={false}
+        draggable={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+      />
     </>
   );
 };
@@ -33,7 +47,10 @@ interface RenderIfProps {
   children: React.ReactNode;
 }
 
-export const RenderIf: React.FC<RenderIfProps> = ({ condition = true, children }) => {
+export const RenderIf: React.FC<RenderIfProps> = ({
+  condition = true,
+  children,
+}) => {
   if (condition) {
     return children;
   }
@@ -65,10 +82,33 @@ const Loading: React.FC = () => {
 };
 
 const Header: React.FC = () => {
+  const auth = useAuth();
+  const user = auth.getUserSession();
+  const router = useRouter();
+
+  function logout() {
+    auth.invalidateSession();
+    router.push("/login");
+  }
+
   return (
     <header className="bg-indigo-950 text-white py-3">
       <div className="container mx-auto flex justify-between items-center px-4">
-        <h1 className="text-3x font-boldl">ImageLite</h1>
+        <Link href="/galeria">
+          <h1 className="text-3x font-boldl">ImageLite</h1>
+        </Link>
+        <RenderIf condition={!!user}>
+          <div className="flex items-center">
+            <div className="relative">
+              <span className="w-64 py-3 px-6 text-md">Olá, {user?.name}</span>
+              <span className="w-64 py-3 px-6 text-sm">
+                <a href="#" onClick={logout}>
+                  Sair
+                </a>
+              </span>
+            </div>
+          </div>
+        </RenderIf>
       </div>
     </header>
   );
